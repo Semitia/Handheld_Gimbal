@@ -24,6 +24,7 @@ typedef struct __GimInit_t {
 /* 云台类 */
 class Gimbal {
 public:
+    Gimbal();
     Gimbal(GimInit_t *init);
     ~Gimbal();
     void stateUpdate();
@@ -47,6 +48,27 @@ private:
     float acc_x, acc_y, acc_z;              // 加速度计数据
     int light_threshold;                    // 补光阈值
     int light_val;                          // 光传感器数据
+};
+
+Gimbal::Gimbal() {
+    led_pin = 9;
+    button_pin = 1;
+    light_sensor_pin = A0;
+    light_threshold = 100;
+    for(int i = 0; i < 3; i++) {
+        servo[i].attach(i + 3);
+        servo_pos[i] = 90;
+    }
+    IIC = Wire;
+    IIC.begin();
+    IMU = MPU6050(IIC);
+    Wire.begin();
+    IMU.begin();
+    IMU.calcGyroOffsets(true);
+
+    pinMode(led_pin, OUTPUT);
+    pinMode(button_pin, INPUT);
+    pinMode(light_sensor_pin, INPUT);
 }
 
 Gimbal::Gimbal(GimInit_t *init) {
@@ -61,12 +83,19 @@ Gimbal::Gimbal(GimInit_t *init) {
     IIC = TwoWire();
     IIC.begin();
     IMU = MPU6050(IIC);
+    Wire.begin();
     IMU.begin();
     IMU.calcGyroOffsets(true);
 
     pinMode(led_pin, OUTPUT);
     pinMode(button_pin, INPUT);
     pinMode(light_sensor_pin, INPUT);
+}
+
+void Gimbal::~Gimbal() {
+    for(int i = 0; i < 3; i++) {
+        servo[i].detach();
+    }
 }
 
 void Gimbal::stateUpdate() {

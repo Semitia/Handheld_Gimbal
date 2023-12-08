@@ -14,17 +14,19 @@ const int LED_pin=13;
 Gimbal gimbal;
 
 void setup() {
-  GimInit_t gim_init = {
-    .led_pin = 9,
-    .button_pin = 1,
-    .servo_pin = {3, 5, 6},
-    .light_sensor_pin = A0,
-    .light_threshold = 100,
-    .iic_SDA_pin = A4,
-    .iic_SCL_pin = A5,
-    .iic_num = 0
-  };
+  GimInit_t gim_init;
+  gim_init.led_pin = 9;
+  gim_init.button_pin = 1;
+  gim_init.servo_pin[0] = 3;
+  gim_init.servo_pin[1] = 5;
+  gim_init.servo_pin[2] = 6;
+  gim_init.light_sensor_pin = A0;
+  gim_init.light_threshold = 100;
+  gim_init.iic_SDA_pin = A4;
+  gim_init.iic_SCL_pin = A5;
+  gim_init.iic_num = 0;
   gimbal = Gimbal(&gim_init);
+  
   // 串口初始化
   Serial.begin(115200);
   while(Serial.read()>=0){}                   //clear buffer
