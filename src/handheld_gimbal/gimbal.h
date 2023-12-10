@@ -59,12 +59,12 @@ Gimbal::Gimbal() {
         servo[i].attach(i + 3);
         servo_pos[i] = 90;
     }
-    IIC = Wire;
-    IIC.begin();
-    IMU = MPU6050(IIC);
-    Wire.begin();
-    IMU.begin();
-    IMU.calcGyroOffsets(true);
+    // IIC = Wire;
+    // IIC.begin();
+    // IMU = MPU6050(IIC);
+    // Wire.begin();
+    // IMU.begin();
+    // IMU.calcGyroOffsets(true);
 
     pinMode(led_pin, OUTPUT);
     pinMode(button_pin, INPUT);

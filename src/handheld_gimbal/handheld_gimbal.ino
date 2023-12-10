@@ -18,17 +18,8 @@ const int motor_IN1[3] = {5,6,10},
           motor_C2[3] = {4,8,13};
 const int ADC_pin[3] = {A0,A1,A2};
 
+Gimbal gimbal;
 void setup() {
-  for(int i=0;i<3;i++){
-    /* 电机控制信号 */
-    pinMode(motor_IN1[i],OUTPUT);
-    pinMode(motor_IN2[i],OUTPUT);
-    /* 电机编码器 */
-    pinMode(motor_C1[i],INPUT_PULLUP);
-    pinMode(motor_C2[i],INPUT_PULLUP);
-    /* 电机角度传感器 */
-    pinMode(ADC_pin[i],INPUT);
-  }
 
   // 串口初始化
   Serial.begin(115200);
@@ -77,7 +68,7 @@ void loop() {
 
 
 // const int LED_pin=13;
-// Gimbal gimbal;
+
 
 // void setup() {
 //   // 串口初始化
