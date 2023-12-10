@@ -14,6 +14,11 @@ const int LED_pin=13;
 Gimbal gimbal;
 
 void setup() {
+  // 串口初始化
+  Serial.begin(115200);
+  while(Serial.read()>=0){}                   //clear buffer
+  Serial.print("Serial has been inited\r\n");
+
   GimInit_t gim_init;
   gim_init.led_pin = 9;
   gim_init.button_pin = 1;
@@ -27,16 +32,17 @@ void setup() {
   gim_init.iic_num = 0;
   gimbal = Gimbal(&gim_init);
   
-  // 串口初始化
-  Serial.begin(115200);
-  while(Serial.read()>=0){}                   //clear buffer
+
   mySCoop.start();
+  Serial.print("Setup finished! \r\n");
 }
 
 void loop() {
-  gimbal.stateUpdate();
-  gimbal.calculate();
-  gimbal.execute();
+  Serial.print("one loop\n");
+  sleep(1000);
+  //gimbal.stateUpdate();
+  //gimbal.calculate();
+  //gimbal.execute();
   return;
 }
 
@@ -45,6 +51,7 @@ void loop() {
 */
 defineTaskLoop(info_Task){
   static bool LED_state = 1;
+  Serial.print("info_Task\n");
   sleep(2000); // 针对线程
   if(LED_state) {
     LED_state=0;

@@ -90,9 +90,10 @@ Gimbal::Gimbal(GimInit_t *init) {
     pinMode(led_pin, OUTPUT);
     pinMode(button_pin, INPUT);
     pinMode(light_sensor_pin, INPUT);
+    Serial.print("Gimbal init.\r\n");
 }
 
-void Gimbal::~Gimbal() {
+Gimbal::~Gimbal() {
     for(int i = 0; i < 3; i++) {
         servo[i].detach();
     }
@@ -111,6 +112,18 @@ void Gimbal::stateUpdate() {
     light_val = analogRead(light_sensor_pin);
     // button
     button = digitalRead(button_pin);
+
+    //DEBUG
+    Serial.print("pitch | yaw | roll | acc_x | acc_y | acc_z | light_val | button\n");
+    Serial.print(pitch); Serial.print(" | ");
+    Serial.print(yaw); Serial.print(" | ");
+    Serial.print(roll); Serial.print(" | ");
+    Serial.print(acc_x); Serial.print(" | ");
+    Serial.print(acc_y); Serial.print(" | ");
+    Serial.print(acc_z); Serial.print(" | ");
+    Serial.print(light_val); Serial.print(" | ");
+    Serial.print(button); Serial.print("\n");
+
     return;
 }
 
