@@ -51,31 +51,38 @@ void setup() {
 /**
  * 信息打印线程
 */
-defineTaskLoop(info_Task){
-  static bool LED_state = 1;
-  while(1){
-    Serial.print("cnt: ");
-    Serial.println();
+// defineTaskLoop(info_Task){
+//   static bool LED_state = 1;
+//   while(1){
+//     Serial.print("cnt: ");
+//     Serial.println();
 
-    sleep(2000); // 针对线程
-    if(LED_state) {
-      LED_state=0;
-      digitalWrite(LED_pin,HIGH);
-    }
-    else {
-      digitalWrite(LED_pin,LOW);
-      LED_state=1;   
-    }
-  }
-}
+//     sleep(2000); // 针对线程
+//     if(LED_state) {
+//       LED_state=0;
+//       digitalWrite(LED_pin,HIGH);
+//     }
+//     else {
+//       digitalWrite(LED_pin,LOW);
+//       LED_state=1;   
+//     }
+//   }
+// }
 
 
 void loop() {
   Serial.println("loop\r\n");
-  // gimbal.stateUpdate();
-  // gimbal.calculate();
-  // //gimbal.execute();
-  // gimbal.servoTest();
+  gimbal.stateUpdate();
+  gimbal.calculate();
+  gimbal.execute();
+
+  if(! gimbal.checkButton()) {//0,没按，不执行
+    gimbal.updateTar();
+
+  }
+  else { //按下了，开始平衡
+
+  }
   // sleep(1000);
   joint[0].write(90);
   joint[1].write(90);

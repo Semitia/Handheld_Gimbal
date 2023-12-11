@@ -37,6 +37,8 @@ public:
     void calculate();
     void execute();
     void servoTest();
+    bool checkButton();
+    void updateTar();
 private:
     // 硬件相关
     int led_pin;
@@ -103,7 +105,6 @@ void Gimbal::stateUpdate() {
     acc_x = IMU->getAccX();
     acc_y = IMU->getAccY();
     acc_z = IMU->getAccZ();
-
     // light sensor
     light_val = analogRead(light_sensor_pin);
     // button
@@ -114,12 +115,8 @@ void Gimbal::stateUpdate() {
     Serial.print(pitch); Serial.print(" | ");
     Serial.print(yaw); Serial.print(" | ");
     Serial.print(roll); Serial.print(" |    ");
-    // Serial.print(acc_x); Serial.print(" | ");
-    // Serial.print(acc_y); Serial.print(" | ");
-    // Serial.print(acc_z); Serial.print(" |   ");
     Serial.print(light_val); Serial.print("      |    ");
     Serial.print(button); Serial.print("\r\n \r\n");
-
     return;
 }
 
@@ -133,6 +130,15 @@ void Gimbal::calculate() {
     servo_pos[PITCH] += (int)(pitch_tar - pitch);
     servo_pos[YAW] += (int)(yaw_tar - yaw);
     servo_pos[ROLL] += (int)(roll_tar - roll);
+
+    //DEBUG
+    Serial.print("pos[PITCH]  | pos[YAW]  | pos[ROLL] | pitch_tar | yaw_tar | roll_tar \r\n");
+    Serial.print(servo_pos[PITCH]); Serial.print(" | ");
+    Serial.print(servo_pos[YAW]); Serial.print(" | ");
+    Serial.print(servo_pos[ROLL]); Serial.print(" | ");
+    Serial.print(pitch_tar); Serial.print(" | ");
+    Serial.print(yaw_tar); Serial.print(" | ");
+    Serial.print(roll_tar); Serial.print("\r\n \r\n");
     return;
 }
 
@@ -143,11 +149,22 @@ void Gimbal::execute() {
     else {
         digitalWrite(led_pin, LOW);
     }
-    if(button) return;
-    for(int i = 0; i < 3; i++) {
-        servo[i].write(servo_pos[i]);
-    }
+    // if(button) return;
+    // for(int i = 0; i < 3; i++) {
+    //     servo[i].write(servo_pos[i]);
+    // }
     return;
+}
+
+void Gimbal::updateTar() {
+    pitch_tar = pitch;
+    yaw_tar = yaw;
+    roll_tar = roll;
+    return;
+}
+
+bool Gimbal::checkButton() {
+    return button; 
 }
 
 void Gimbal::servoTest() {
