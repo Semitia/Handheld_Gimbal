@@ -1,3 +1,8 @@
+/**
+ * @file gimbal.h
+ * @brief arduino nano 的手持云台库头文件
+*/
+
 #ifndef __GIMBAL_H__
 #define __GIMBAL_H__
 #include <Wire.h>
@@ -18,7 +23,8 @@ typedef struct __GimInit_t {
     int servo_pin[3]; 
     int light_threshold;
     int light_sensor_pin;
-    int iic_SDA_pin, iic_SCL_pin, iic_num;
+    TwoWire *IIC;
+    MPU6050 *IMU;
 } GimInit_t;
 
 /* 云台类 */
@@ -30,7 +36,7 @@ public:
     void stateUpdate();
     void calculate();
     void execute();
-
+    void servoTest();
 private:
     // 硬件相关
     int led_pin;
@@ -47,14 +53,15 @@ private:
     float pitch_tar, yaw_tar, roll_tar;     // 目标姿态
     float acc_x, acc_y, acc_z;              // 加速度计数据
     int light_threshold;                    // 补光阈值
-    int light_val;                          // 光传感器数据
+    int light_val;                          // 光传感器数据，亮度越高，值越小
+    int led_intensity;                      // 补光灯亮度0-255
 };
 
 Gimbal::Gimbal() {
     led_pin = 9;
     button_pin = 1;
     light_sensor_pin = A0;
-    light_threshold = 100;
+    light_threshold = 900;
     for(int i = 0; i < 3; i++) {
         servo[i].attach(i + 3);
         servo_pos[i] = 90;
@@ -76,16 +83,13 @@ Gimbal::Gimbal(GimInit_t *init) {
     button_pin = init->button_pin;
     light_sensor_pin = init->light_sensor_pin;
     light_threshold = init->light_threshold;
+    led_intensity = 0;
     for(int i = 0; i < 3; i++) {
         servo[i].attach(init->servo_pin[i]);
         servo_pos[i] = 90;
     }
-    // IIC = TwoWire();
-    // IIC.begin();
-    // IMU = MPU6050(IIC);
-    // Wire.begin();
-    // IMU.begin();
-    // IMU.calcGyroOffsets(true);
+    IIC = init->IIC;
+    IMU = init->IMU;
 
     pinMode(led_pin, OUTPUT);
     pinMode(button_pin, INPUT);
@@ -115,15 +119,15 @@ void Gimbal::stateUpdate() {
     button = digitalRead(button_pin);
 
     //DEBUG
-    Serial.print("pitch | yaw | roll | acc_x | acc_y | acc_z | light_val | button\n");
+    Serial.print("pitch  |  yaw  |  roll | light_val | button \r\n");
     Serial.print(pitch); Serial.print(" | ");
     Serial.print(yaw); Serial.print(" | ");
-    Serial.print(roll); Serial.print(" | ");
-    Serial.print(acc_x); Serial.print(" | ");
-    Serial.print(acc_y); Serial.print(" | ");
-    Serial.print(acc_z); Serial.print(" | ");
-    Serial.print(light_val); Serial.print(" | ");
-    Serial.print(button); Serial.print("\n");
+    Serial.print(roll); Serial.print(" |    ");
+    // Serial.print(acc_x); Serial.print(" | ");
+    // Serial.print(acc_y); Serial.print(" | ");
+    // Serial.print(acc_z); Serial.print(" |   ");
+    Serial.print(light_val); Serial.print("      |    ");
+    Serial.print(button); Serial.print("\r\n \r\n");
 
     return;
 }
@@ -142,7 +146,7 @@ void Gimbal::calculate() {
 }
 
 void Gimbal::execute() {
-    if(light_val < light_threshold) {   // 补光
+    if(light_val > light_threshold) {   // 补光
         digitalWrite(led_pin, HIGH);
     }
     else {
@@ -151,6 +155,18 @@ void Gimbal::execute() {
     if(button) return;
     for(int i = 0; i < 3; i++) {
         servo[i].write(servo_pos[i]);
+    }
+    return;
+}
+
+void Gimbal::servoTest() {
+    for(int i = 0; i < 3; i++) {
+        servo[i].write(90);
+        delay(1000);
+        servo[i].write(0);
+        delay(1000);
+        servo[i].write(180);
+        delay(1000);
     }
     return;
 }
