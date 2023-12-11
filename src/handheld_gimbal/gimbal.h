@@ -37,8 +37,8 @@ private:
     int button_pin;
     int light_sensor_pin;
     Servo servo[3];
-    TwoWire IIC;
-    MPU6050 IMU;
+    TwoWire *IIC;
+    MPU6050 *IMU;
 
     // 状态
     int servo_pos[3];
@@ -80,12 +80,12 @@ Gimbal::Gimbal(GimInit_t *init) {
         servo[i].attach(init->servo_pin[i]);
         servo_pos[i] = 90;
     }
-    IIC = TwoWire();
-    IIC.begin();
-    IMU = MPU6050(IIC);
-    Wire.begin();
-    IMU.begin();
-    IMU.calcGyroOffsets(true);
+    // IIC = TwoWire();
+    // IIC.begin();
+    // IMU = MPU6050(IIC);
+    // Wire.begin();
+    // IMU.begin();
+    // IMU.calcGyroOffsets(true);
 
     pinMode(led_pin, OUTPUT);
     pinMode(button_pin, INPUT);
@@ -101,13 +101,14 @@ Gimbal::~Gimbal() {
 
 void Gimbal::stateUpdate() {
     // IMU
-    IMU.update();
-    pitch = IMU.getAngleX();
-    yaw = IMU.getAngleY();
-    roll = IMU.getAngleZ();
-    acc_x = IMU.getAccX();
-    acc_y = IMU.getAccY();
-    acc_z = IMU.getAccZ();
+    IMU->update();
+    pitch = IMU->getAngleX();
+    yaw = IMU->getAngleY();
+    roll = IMU->getAngleZ();
+    acc_x = IMU->getAccX();
+    acc_y = IMU->getAccY();
+    acc_z = IMU->getAccZ();
+
     // light sensor
     light_val = analogRead(light_sensor_pin);
     // button

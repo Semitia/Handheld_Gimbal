@@ -7,23 +7,21 @@
 //  * @link https://github.com/Semitia/Handheld_Gimbal.git
 // */
 
-
 #include <SCoop.h>
 #include "gimbal.h"
 
-const int LED_pin=13;
-const int motor_IN1[3] = {5,6,10},
-          motor_IN2[3] = {3,9,11},
-          motor_C1[3] = {2,7,12},
-          motor_C2[3] = {4,8,13};
-const int ADC_pin[3] = {A0,A1,A2};
-
+const int LED_pin = 13;
+MPU6050 mpu6050(Wire);
 Gimbal gimbal;
 void setup() {
-
   // 串口初始化
   Serial.begin(115200);
   while(Serial.read()>=0){}                   //clear buffer
+  
+  Wire.begin();
+  mpu6050.begin();
+  mpu6050.calcGyroOffsets(true);
+
   mySCoop.start();
 }
 
@@ -33,17 +31,9 @@ void setup() {
 defineTaskLoop(info_Task){
   static bool LED_state = 1;
   while(1){
-    //print angle
-    Serial.print("angle: \r\n");
-    // for(int i=0;i<3;i++){
-    //   Serial.print(AS[i].updateAngle(analogRead(ADC_pin[i])));
-    //   Serial.print(" ");
-    // }
-    // Serial.println();
     Serial.print("cnt: ");
     Serial.println();
 
-    // delay(2000); 针对全局
     sleep(2000); // 针对线程
     if(LED_state) {
       LED_state=0;
@@ -57,9 +47,29 @@ defineTaskLoop(info_Task){
 }
 
 
-
 void loop() {
-  Serial.print("loop \r\n");
+  mpu6050.update();
+  Serial.println("=======================================================");
+  Serial.print("temp : ");Serial.println(mpu6050.getTemp());
+  Serial.print("accX : ");Serial.print(mpu6050.getAccX());
+  Serial.print("\taccY : ");Serial.print(mpu6050.getAccY());
+  Serial.print("\taccZ : ");Serial.println(mpu6050.getAccZ());
+
+  Serial.print("gyroX : ");Serial.print(mpu6050.getGyroX());
+  Serial.print("\tgyroY : ");Serial.print(mpu6050.getGyroY());
+  Serial.print("\tgyroZ : ");Serial.println(mpu6050.getGyroZ());
+
+  Serial.print("accAngleX : ");Serial.print(mpu6050.getAccAngleX());
+  Serial.print("\taccAngleY : ");Serial.println(mpu6050.getAccAngleY());
+
+  Serial.print("gyroAngleX : ");Serial.print(mpu6050.getGyroAngleX());
+  Serial.print("\tgyroAngleY : ");Serial.print(mpu6050.getGyroAngleY());
+  Serial.print("\tgyroAngleZ : ");Serial.println(mpu6050.getGyroAngleZ());
+  
+  Serial.print("angleX : ");Serial.print(mpu6050.getAngleX());
+  Serial.print("\tangleY : ");Serial.print(mpu6050.getAngleY());
+  Serial.print("\tangleZ : ");Serial.println(mpu6050.getAngleZ());
+  
   sleep(1000);
 }
 
@@ -68,8 +78,6 @@ void loop() {
 
 
 // const int LED_pin=13;
-
-
 // void setup() {
 //   // 串口初始化
 //   Serial.begin(115200);
