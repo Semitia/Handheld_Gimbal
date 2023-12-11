@@ -62,16 +62,6 @@ Gimbal::Gimbal() {
     button_pin = 1;
     light_sensor_pin = A0;
     light_threshold = 900;
-    for(int i = 0; i < 3; i++) {
-        servo[i].attach(i + 3);
-        servo_pos[i] = 90;
-    }
-    // IIC = Wire;
-    // IIC.begin();
-    // IMU = MPU6050(IIC);
-    // Wire.begin();
-    // IMU.begin();
-    // IMU.calcGyroOffsets(true);
 
     pinMode(led_pin, OUTPUT);
     pinMode(button_pin, INPUT);
@@ -84,10 +74,11 @@ Gimbal::Gimbal(GimInit_t *init) {
     light_sensor_pin = init->light_sensor_pin;
     light_threshold = init->light_threshold;
     led_intensity = 0;
-    for(int i = 0; i < 3; i++) {
-        servo[i].attach(init->servo_pin[i]);
-        servo_pos[i] = 90;
-    }
+    // servo[0].attach(init->servo_pin[0]);
+    // servo[1].attach(init->servo_pin[1]);
+    // servo[2].attach(init->servo_pin[2]);
+    //Serial.print(init->servo_pin[0]);
+
     IIC = init->IIC;
     IMU = init->IMU;
 
@@ -160,14 +151,14 @@ void Gimbal::execute() {
 }
 
 void Gimbal::servoTest() {
-    for(int i = 0; i < 3; i++) {
-        servo[i].write(90);
-        delay(1000);
-        servo[i].write(0);
-        delay(1000);
-        servo[i].write(180);
-        delay(1000);
-    }
+    servo[0].write(90);
+    servo[1].write(90);
+    servo[2].write(90);
+    delay(1000);
+    servo[0].write(0);
+    servo[1].write(0);
+    servo[2].write(0);
+    delay(1000);
     return;
 }
 
