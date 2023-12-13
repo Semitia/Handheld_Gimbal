@@ -42,7 +42,7 @@ void setup() {
   gimbal = Gimbal(&gim_init);
 
   joint[0].attach(3);
-  joint[1].attach(5);
+  joint[1].attach(10);
   joint[2].attach(6);
 
   mySCoop.start();
@@ -84,13 +84,17 @@ void loop() {
 
   }
   // sleep(1000);
-  joint[0].write(90);
-  joint[1].write(90);
-  joint[2].write(90);
+  //joint[0].write(90);
+  sleep(100);
+  //joint[1].write(90);
+  sleep(100);
+  //joint[2].write(90);
   sleep(1000);
-  joint[0].write(0);
-  joint[1].write(0);
-  joint[2].write(0);
+  //joint[0].write(0);
+  sleep(100);
+  //joint[1].write(0);
+  sleep(100);
+  //joint[2].write(0);
   sleep(1000);
 
 }
